@@ -1,0 +1,56 @@
+# 1.This file shows the parsed IR info when graph evaluating failed to help find the problem.
+# 2.You can search the last `------------------------>` to the node which is inferred failed.
+# 3.Refer to https://www.mindspore.cn/search?inputValue=analyze_fail.dat to get more instructions.
+# ===============================================================================
+
+# [No.1] Default_wrapper.1
+# In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:38/    def construct(self, global_states, local_states):/
+funcgraph fg_1(
+        %para1 : Tensor(F32)[1, 1, 7]    # global_states
+        , %para2 : Tensor(F32)[1, 1, 4]    # local_states
+    ) {
+
+#------------------------> 0
+    %1 = FuncGraph::fg_3(%para1, %para2)    #(Tensor(F32)[1, 1, 7], Tensor(F32)[1, 1, 4])    # fg_3=Default.3 #scope: Default
+#[CNode]4
+    Primitive::Return{prim_type=1}(%1)    #(Undefined) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:68/        return 0/#[CNode]5
+}
+# order:
+#   1: @Default_wrapper.1:[CNode]4{[0]: ValueNode<FuncGraph> Default.3, [1]: global_states, [2]: local_states}
+#   2: @Default_wrapper.1:[CNode]5{[0]: ValueNode<Primitive> Return, [1]: [CNode]4}
+
+
+# [No.2] Default.3
+# In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:38/    def construct(self, global_states, local_states):/
+funcgraph fg_3(
+        %para3 : Tensor(F32)[1, 1, 7]    # global_states
+        , %para4 : Tensor(F32)[1, 1, 4]    # local_states
+    ) {
+    %1 : Tuple[I64*3]TupleShape(NoShape, NoShape, NoShape) = Primitive::getattr{prim_type=1}(%para3, "shape")    #(Tensor(F32)[1, 1, 7], StringNoShape) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:47/        states = mindspore.ops.Zeros((global_states.shape[0], 64), mindspore.float32)/#[CNode]6
+    %2 : I64NoShape = DoSignaturePrimitive::S-Prim-getitem{prim_type=1}(%1, I64(0))    #(Tuple[I64*3]TupleShape(NoShape, NoShape, NoShape), I64NoShape) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:47/        states = mindspore.ops.Zeros((global_states.shape[0], 64), mindspore.float32)/#[CNode]7
+    %3 : Tuple[I64*2]TupleShape(NoShape, NoShape) = DoSignaturePrimitive::S-Prim-MakeTuple{prim_type=1}(%2, I64(64))    #(I64NoShape, I64NoShape) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:47/        states = mindspore.ops.Zeros((global_states.shape[0], 64), mindspore.float32)/#[CNode]8
+
+#------------------------> 1
+    %4 = ClassType(%3, F32)    #(Tuple[I64*2]TupleShape(NoShape, NoShape), TypeTypeNoShape) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:47/        states = mindspore.ops.Zeros((global_states.shape[0], 64), mindspore.float32)/#states
+    %5 = Primitive::stop_gradient{prim_type=1}(%4)    #(Undefined) #scope: Default
+#[CNode]9
+    %6 = Primitive::Depend{prim_type=1}[side_effect_propagate=I64(1)](I64(0), %5)    #(Undefined, Undefined) #scope: Default
+#[CNode]10
+    Primitive::Return{prim_type=1}(%6)    #(Undefined) #scope: Default
+      # In file D:\pythonproject\DRL-DBSCAN-mindspore\pythonProject2\models\TD3.py:68/        return 0/#[CNode]11
+}
+# order:
+#   1: @Default.3:[CNode]6{[0]: ValueNode<Primitive> getattr, [1]: global_states, [2]: ValueNode<StringImm> shape}
+#   2: @Default.3:[CNode]7{[0]: ValueNode<DoSignaturePrimitive> S-Prim-getitem, [1]: [CNode]6, [2]: ValueNode<Int64Imm> 0}
+#   3: @Default.3:[CNode]8{[0]: ValueNode<DoSignaturePrimitive> S-Prim-MakeTuple, [1]: [CNode]7, [2]: ValueNode<Int64Imm> 64}
+#   4: @Default.3:states{[0]: ValueNode<ClassType> class 'mindspore.ops.operations.array_ops.Zeros', [1]: [CNode]8, [2]: ValueNode<Float> Float32}
+#   5: @Default.3:[CNode]11{[0]: ValueNode<Primitive> Return, [1]: [CNode]10}
+
+
+#===============================================================================
+# num of function graphs in stack: 2
